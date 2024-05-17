@@ -1,0 +1,4 @@
+label: Öffnungszeiten
+fields:
+  openingHours: fields/openinghours
+  openingHoursOverride: fields/openinghoursOverride

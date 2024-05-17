@@ -1,0 +1,27 @@
+{
+    "name": "zephir/kirby-openinghours",
+    "description": "Openinghours plugin to manage and display opening hours.",
+    "license": "MIT",
+    "type": "kirby-plugin",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Marc Stampfli",
+            "email": "marc@zephir.ch"
+        }
+    ],
+    "require": {
+        "getkirby/composer-installer": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zephir\\Openinghours\\": "classes/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "getkirby/composer-installer": true
+        }
+    }
+}

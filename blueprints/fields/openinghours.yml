@@ -1,0 +1,41 @@
+label: Standard Öffnungszeiten
+type: structure
+fields:
+  day:
+    label: Tag
+    type: select
+    options:
+      mo: Montag
+      tu: Dienstag
+      we: Mittwoch
+      th: Donnerstag
+      fr: Freitag
+      sa: Samstag
+      su: Sonntag
+    default: monday
+  closed:
+    label: Geschlossen
+    type: toggle
+    text:
+      - nein
+      - ja
+  from1:
+    label: Von
+    type: time
+    when:
+      closed: false
+  to1:
+    label: Bis
+    type: time
+    when:
+      closed: false
+  from2:
+    label: Von
+    type: time
+    when:
+      closed: false
+  to2:
+    label: Bis
+    type: time
+    when:
+      closed: false

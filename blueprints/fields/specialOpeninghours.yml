@@ -1,0 +1,23 @@
+label: Spezielle Öffnungszeiten
+type: structure
+fields:
+  date:
+    label: Datum
+    type: date
+    default: today
+  closed:
+    label: Geschlossen
+    type: toggle
+    text:
+      - nein
+      - ja
+  timeblock1:
+    label: Zeitraum 1
+    type: times
+    when:
+      closed: false
+  timeblock2:
+    label: Zeitraum 2
+    type: times
+    when:
+      closed: false

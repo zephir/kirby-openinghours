@@ -1,6 +1,6 @@
 <template>
     <k-field
-        class="k-daterange-field"
+        class="k-timerange-field"
         v-bind="props"
         :label="label"
         :required="required"
@@ -8,7 +8,7 @@
     >
         <k-grid variant="fields">
             <k-column width="6/12">
-                <k-date-field
+                <k-time-field
                     label="Von"
                     :value="value?.start"
                     @input="val => emitChange(val, 'start')"
@@ -20,7 +20,7 @@
                 />
             </k-column>
             <k-column width="6/12">
-                <k-date-field
+                <k-time-field
                     label="Bis"
                     :value="value?.end"
                     @input="val => emitChange(val, 'end')"
@@ -48,15 +48,33 @@ const props  = defineProps({
     value: {
         type: Object,
     },
-    required: Boolean,
-    disabled: Boolean,
+    required: {
+        type: Boolean,
+        default: false
+    },
+    disabled: {
+        type: Boolean,
+        default: false
+    },
 })
 
 const emit = defineEmits(["input"])
 
-const validate = ({ start, end }, changedValue) => {
-    let startDate = dayjs(start)
-    let endDate = dayjs(end)
+const validateRange = ({ start, end }, changedValue) => {
+    if (!start || !end) {
+        return { start, end }
+    }
+
+    const startTimes = start.split(':')
+    const endTimes = end.split(':')
+
+    let startDate = dayjs('01.01.2000')
+    let endDate = dayjs('01.01.2000')
+
+    startDate = startDate.hour(startTimes[0])
+    startDate = startDate.minute(startTimes[1])
+    endDate = endDate.hour(endTimes[0])
+    endDate = endDate.minute(endTimes[1])
 
     if (changedValue === 'start' && endDate.isBefore(startDate)) {
         endDate = startDate
@@ -64,12 +82,9 @@ const validate = ({ start, end }, changedValue) => {
         startDate = endDate
     }
 
-    startDate = startDate.hour(0).minute(0).second(0)
-    endDate = endDate.hour(23).minute(59).second(59)
-
     return {
-        start: startDate.format(),
-        end: endDate.format()
+        start: startDate.format('HH:mm:ss'),
+        end: endDate.format('HH:mm:ss'),
     }
 }
 
@@ -89,7 +104,7 @@ const emitChange = (value, name) => {
         updatedValue.end = updatedValue.start
     }
 
-    updatedValue = validate(updatedValue, name)
+    updatedValue = validateRange(updatedValue, name)
 
     emit('input', updatedValue)
 }

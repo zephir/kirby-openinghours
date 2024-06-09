@@ -1,9 +1,25 @@
 <template>
     <div class="k-openinghours-field-preview">
-        <strong v-if="preview.label">{{ preview.label }}: </strong>
-        <span v-if="preview.daterange">{{ preview.daterange }}</span>
-        <span v-if="preview?.weekdays?.length">: {{ preview.weekdays.join(', ') }}</span>
-        <span v-else>: Keine Wochentage konfiguriert</span>
+        <div v-if="value.default">
+            <strong>Standard Öffnungszeiten</strong>
+        </div>
+        <div v-if="preview.label">
+            <strong>{{ preview.label }}</strong>
+        </div>
+        <div v-if="preview.daterange">
+            <strong v-if="preview.daterange">{{ preview.daterange }}</strong>
+        </div>
+        <div>
+            <table v-if="preview?.weekdays?.length">
+                <tr v-for="weekday in preview.weekdays" :key="weekday.day">
+                    <td>{{ weekday.day }}</td>
+                    <td>{{ weekday.time }}</td>
+                </tr>
+            </table>
+            <div v-else>
+                Keine Öffnungszeiten konfiguriert
+            </div>
+        </div>
     </div>
 </template>
 
@@ -28,9 +44,11 @@ const weekdayLabels = {
 }
 
 const activeWeekdays = computed(() => {
-    let activeWeekdays = []
+    if (props.value.default) {
+        return Object.keys(weekdayLabels)
+    }
 
-    console.log(props.value)
+    let activeWeekdays = []
 
     const startDate = dayjs(props.value.daterange.start)
     const endDate = dayjs(props.value.daterange.end)
@@ -39,35 +57,84 @@ const activeWeekdays = computed(() => {
     while (loopDate.isBefore(endDate) || loopDate.isSame(endDate)) {
         activeWeekdays.push(loopDate.format('dd').toLowerCase())
         loopDate = loopDate.add(1, 'day')
+
+        if (activeWeekdays.length >= 7) {
+            break
+        }
     }
 
     return [...new Set(activeWeekdays)]
 })
 
 const preview = computed(() => {
-    const start = dayjs(props.value.daterange.start)
-    const end = dayjs(props.value.daterange.end)
-
-    const daterange = `${start.format('DD.MM.YYYY')} - ${end.format('DD.MM.YYYY')}`
-
     const weekdays = []
+
     for (const [key, value] of Object.entries(props.value.weekdays)) {
         if (value && activeWeekdays.value.includes(key)) {
-            weekdays.push(`${weekdayLabels[key]}` + (value.closed ? ' (geschlossen)' : ''))
+            weekdays.push({
+                day: weekdayLabels[key],
+                time: value.closed ? 'Geschlossen' : getTimeString(value)
+            })
         }
     }
 
+    if (props.value.default) {
+        return {
+            weekdays
+        }
+    }
+
+    const start = props.value.daterange.start ? dayjs(props.value.daterange.start) : false
+    const end = props.value.daterange.end ? dayjs(props.value.daterange.end) : false
+
+    const daterange = (start && end) ? `${start.format('DD.MM.YYYY')} - ${end.format('DD.MM.YYYY')}` : false
+
     return {
         label: props.value.label,
-        daterange: daterange,
-        weekdays: weekdays
+        daterange,
+        weekdays
     }
 })
+
+const getTimeString = (value) => {
+    const entries = []
+
+    if (value.timeblock1) {
+        const t1s = value.timeblock1.start
+        const t1e = value.timeblock1.end
+
+        if (t1s && t1e) {
+            entries.push(`${t1s?.substr(0, t1s.lastIndexOf(":"))} - ${t1e.substr(0, t1e.lastIndexOf(":"))}`)
+        } else if (t1s || t1e) {
+            entries.push('Zeitraum 1: Falsche Eingabe')
+        }
+    }
+    if (value.timeblock2) {
+        const t2s = value.timeblock2.start
+        const t2e = value.timeblock2.end
+
+        if (t2s && t2e) {
+            entries.push(`${t2s?.substr(0, t2s.lastIndexOf(":"))} - ${t2e.substr(0, t2e.lastIndexOf(":"))}`)
+        } else if (t2s || t2e) {
+            entries.push('Zeitraum 2: Falsche Eingabe')
+        }
+    }
+
+    return entries.join(', ')
+}
 
 </script>
 
 <style scoped>
     .k-openinghours-field-preview {
-        padding: 0 var(--table-cell-padding);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 5px var(--table-cell-padding);
+    }
+
+    td:first-of-type {
+        width: 100px;
+        padding-left: 0;
     }
 </style>

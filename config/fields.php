@@ -9,8 +9,8 @@ return [
                 return [
                     'label' => null,
                     'daterange' => [
-                        'start' => Date::now()->toString(),
-                        'end' => Date::now()->toString()
+                        'start' => null,
+                        'end' => null
                     ],
                     'weekdays' => [
                         'mo' => null, // Monday
@@ -61,5 +61,16 @@ return [
                 return Yaml::decode($value);
             }
         ]
-    ]
+    ],
+    'times' => [
+        'props' => [
+            'default' => function ($default = []) {
+                return [
+                    'start' => null,
+                    'end' => null,
+                    ...$default
+                ];
+            }
+        ]
+    ],
 ];

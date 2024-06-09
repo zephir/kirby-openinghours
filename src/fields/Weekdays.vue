@@ -14,37 +14,19 @@
                             saveable: true,
                             text: ['nein', 'ja']
                         },
-                        from1: {
-                            label: 'Von',
-                            name: 'from1',
-                            type: 'time',
+                        timeblock1: {
+                            label: 'Zeitraum 1',
+                            name: 'timeblock1',
+                            type: 'times',
                             saveable: true,
                             when: {
                                 closed: false
                             }
                         },
-                        to1: {
-                            label: 'Bis',
-                            name: 'to1',
-                            type: 'time',
-                            saveable: true,
-                            when: {
-                                closed: false
-                            }
-                        },
-                        from2: {
-                            label: 'Von',
-                            name: 'from2',
-                            type: 'time',
-                            saveable: true,
-                            when: {
-                                closed: false
-                            }
-                        },
-                        to2: {
-                            label: 'Bis',
-                            name: 'to2',
-                            type: 'time',
+                        timeblock2: {
+                            label: 'Zeitraum 2',
+                            name: 'timeblock2',
+                            type: 'times',
                             saveable: true,
                             when: {
                                 closed: false
@@ -71,6 +53,7 @@ const props  = defineProps({
         required: true,
     },
     value: Object,
+    isDefault: Boolean,
     required: Boolean,
     disabled: Boolean,
     daterange: Object
@@ -91,6 +74,14 @@ const startDate = ref(null)
 const endDate = ref(null)
 
 const evaluateWeekdays = () => {
+    if (props.isDefault) {
+        weekdays.value.forEach(weekday => {
+            weekday.isActive = true
+        })
+
+        return
+    }
+
     if (!startDate.value || !endDate.value) {
         return
     }
@@ -101,6 +92,10 @@ const evaluateWeekdays = () => {
     while (loopDate.isBefore(endDate.value) || loopDate.isSame(endDate.value)) {
         activeWeekdays.push(loopDate.format('dd').toLowerCase())
         loopDate = loopDate.add(1, 'day')
+
+        if (activeWeekdays.length >= 7) {
+            break
+        }
     }
 
     activeWeekdays = [...new Set(activeWeekdays)]
@@ -120,8 +115,10 @@ const emitChange = (day, value) => {
 }
 
 const onDaterangeChange = (daterange) => {
-    startDate.value = dayjs(daterange.start)
-    endDate.value = dayjs(daterange.end)
+    if (daterange) {
+        startDate.value = dayjs(daterange.start)
+        endDate.value = dayjs(daterange.end)
+    }
 
     evaluateWeekdays()
 }
@@ -129,6 +126,10 @@ const onDaterangeChange = (daterange) => {
 watch(() => props.daterange, (newValue) => {
     onDaterangeChange(newValue)
 }, { deep: true })
+
+watch(() => props.isDefault, (newValue) => {
+    evaluateWeekdays()
+})
 
 onDaterangeChange(props.daterange)
 

@@ -1,5 +1,7 @@
 # Kirby Pluginkit: Example plugin for Kirby
 
+Vorschau: https://tall-burrito-qb5dz5sqc9.ploi.ing/
+
 > Variant "Setup with Composer dependencies"
 
 This is a boilerplate for a Kirby plugin that can be installed via all three [supported installation methods](https://getkirby.com/docs/guide/plugins/plugin-setup-basic#the-three-plugin-installation-methods).

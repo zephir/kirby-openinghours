@@ -8,7 +8,7 @@ App::plugin('zephir/kirby-openinghours', [
     'fields' => require __DIR__ . '/config/fields.php',
     'blueprints' => [
         'fields/openinghours'           => __DIR__ . '/blueprints/fields/openinghours.yml',
-        'fields/openinghoursOverride'   => __DIR__ . '/blueprints/fields/openinghoursOverride.yml',
+        'fields/specialOpeninghours'    => __DIR__ . '/blueprints/fields/specialOpeninghours.yml',
         'tabs/openinghours'             => __DIR__ . '/blueprints/tabs/openinghours.yml',
         'blocks/openinghours'           => __DIR__ . '/blueprints/blocks/openinghours.yml',
     ],

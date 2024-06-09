@@ -1,6 +1,0 @@
-label: Spezielle Öffnungszeiten
-type: structure
-fields:
-  overrides:
-    label: Öffnungszeiten
-    type: openinghours

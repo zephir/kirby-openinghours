@@ -26,12 +26,20 @@ class Weekdays {
         // Initialize an empty array to store the grouped weekdays
         $grouped = [];
 
+        $weekdays = $this->weekdays;
+
         // Initialize variables to keep track of the previous time ID and the current group index
         $prevTimeId = null;
         $groupIndex = 0;
 
+        // Sort weekdays so closed days are last and all other days are sorted by day index
+        usort($weekdays, function($a, $b) {
+            return $a->isClosed() <=> $b->isClosed()
+                ?: Formatting::getDayIndex($a) <=> Formatting::getDayIndex($b);
+        });
+
         // Iterate over each weekday
-        foreach ($this->weekdays as $day) {
+        foreach ($weekdays as $day) {
             // Determine the time ID for the current day
             // If the day is closed, the time ID is 'closed'
             // Otherwise, the time ID is a string of start-end times for each time block
@@ -63,11 +71,6 @@ class Weekdays {
         $hr = [];
 
         $groupedWeekdays = $this->getGrouped();
-
-        usort($groupedWeekdays, function($a, $b) {
-            return $a[0]->isClosed() <=> $b[0]->isClosed()
-                ?: Formatting::getDayIndex($a[0]) <=> Formatting::getDayIndex($b[0]);
-        });
 
         foreach ($groupedWeekdays as $weekdays) {
             $entry = [

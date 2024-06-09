@@ -1,4 +1,4 @@
-label: Standard Öffnungszeiten
+label: Öffnungszeiten
 type: structure
 fields:
   openinghours:

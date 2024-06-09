@@ -10,8 +10,6 @@ $o = new OpeninghoursModel();
 
 ?>
 
-<h1>Öffnungszeiten</h1>
-
 <?php foreach ($o->getOpeninghours() as $openinghour): ?>
     <?php if ($openinghour->isHidden()) continue; ?>
 

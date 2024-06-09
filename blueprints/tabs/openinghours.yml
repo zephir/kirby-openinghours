@@ -1,4 +1,3 @@
 label: Öffnungszeiten
 fields:
   openinghours: fields/openinghours
-  specialOpeninghours: fields/specialOpeninghours

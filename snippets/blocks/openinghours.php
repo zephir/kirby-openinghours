@@ -23,10 +23,10 @@ $o = new OpeninghoursModel();
     <strong>
         <?php if (!$openinghour->isDefault()): ?>
             <?php
-                $start = $openinghour->getStartDate('E, d.M.Y');
+                $start = $openinghour->getStartDate('E, d.MM.Y');
                 $start = substr_replace($start, '', strpos($start, '.'), 1);
 
-                $end = $openinghour->getEndDate('E, d.M.Y');
+                $end = $openinghour->getEndDate('E, d.MM.Y');
                 $end = substr_replace($end, '', strpos($end, '.'), 1);
             ?>
 

@@ -14,29 +14,27 @@ $o = new OpeninghoursModel();
     <?php if ($openinghour->isHidden()) continue; ?>
 
     <h3>
-        <?= ($openinghour->isActive() ? 'Aktuelle ' : ($openinghour->isDefault() ? 'Standard ' : ''))
-            . 'Öffnungszeiten' .
-            ($openinghour->getLabel() ? (': ' . $openinghour->getLabel()) : '')
-        ?>
+        <?php if ($openinghour->isDefault() && $openinghour->isActive()): ?>
+            Aktuell
+        <?php elseif ($openinghour->isDefault()): ?>
+            Normale Öffnungszeiten
+        <?php else: ?>
+            <?= $openinghour->getLabel() ? $openinghour->getLabel() : '' ?>
+        <?php endif; ?>
     </h3>
 
-    <strong>
-        <?php if (!$openinghour->isDefault()): ?>
-            <?php
-                $start = $openinghour->getStartDate('E, d.MM.Y');
-                $start = substr_replace($start, '', strpos($start, '.'), 1);
+    <?php if (!$openinghour->isDefault()): ?>
+        <?php
+            $start = $openinghour->getStartDate('E dd.MM.Y');
+            $end = $openinghour->getEndDate('E dd.MM.Y');
+        ?>
 
-                $end = $openinghour->getEndDate('E, d.MM.Y');
-                $end = substr_replace($end, '', strpos($end, '.'), 1);
-            ?>
-
-            <?php if ($start === $end): ?>
-                <?= $start ?>
-            <?php else: ?>
-                <?= $start ?> - <?= $end ?>
-            <?php endif; ?>
+        <?php if ($start === $end): ?>
+            <?= $start ?>
+        <?php else: ?>
+            <?= $start ?> bis <?= $end ?>
         <?php endif; ?>
-    </strong>
+    <?php endif; ?>
 
     <div style="margin-top: 10px;">
         <?php foreach ($openinghour->getHumanReadable() as $hr): ?>

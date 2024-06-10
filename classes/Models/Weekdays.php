@@ -75,7 +75,7 @@ class Weekdays {
         foreach ($groupedWeekdays as $weekdays) {
             $entry = [
                 'weekdays' => null,
-                'time' => $weekdays[0]->isClosed() ? 'Geschlossen' : $weekdays[0]->getFormattedTime(),
+                'time' => $weekdays[0]->isClosed() ? 'geschlossen' : $weekdays[0]->getFormattedTime(),
             ];
 
             if (count($weekdays) >= 4) {

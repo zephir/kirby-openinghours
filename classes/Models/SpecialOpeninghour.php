@@ -48,10 +48,6 @@ class SpecialOpeninghour
 
     public function isActive()
     {
-        echo '-----------------';
-        dump($this->date->floor('day'));
-        dump((new Date())->floor('day'));
-        echo '-----------------';
         return $this->date->floor('day')->is((new Date())->floor('day'));
     }
 

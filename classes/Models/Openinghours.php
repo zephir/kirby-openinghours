@@ -142,7 +142,9 @@ class Openinghours {
             return null;
         }
 
-        return $this->openinghours[array_search(true, array_map(fn($oh) => $oh->isActive(), $this->openinghours))];
+        $activeIndex = array_search(true, array_map(fn($oh) => $oh->isActive(), $this->openinghours));
+
+        return $activeIndex !== false ? $this->openinghours[$activeIndex] : null;
     }
 
     /**
@@ -154,7 +156,9 @@ class Openinghours {
             return null;
         }
 
-        return $this->specialOpeninghours[array_search(true, array_map(fn($oh) => $oh->isActive(), $this->specialOpeninghours))];
+        $activeIndex = array_search(true, array_map(fn($oh) => $oh->isActive(), $this->specialOpeninghours));
+
+        return $activeIndex !== false ? $this->specialOpeninghours[$activeIndex] : null;
     }
 
     /**

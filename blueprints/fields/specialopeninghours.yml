@@ -1,0 +1,24 @@
+label: Sonderöffnungszeiten
+type: structure
+sortBy: date
+sortable: false
+fields:
+  label:
+    label: Bezeichnung
+    type: text
+  date:
+    label: Datum
+    type: date
+  closed:
+    label: Geschlossen
+    type: toggle
+  timeblock1:
+    label: Zeitraum 1
+    type: times
+    when:
+      closed: false
+  timeblock2:
+    label: Zeitraum 2
+    type: times
+    when:
+      closed: false

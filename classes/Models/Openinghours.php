@@ -1,8 +1,8 @@
 <?php
 
 namespace Zephir\Openinghours\Models;
+
 use DateInterval;
-use DatePeriod;
 use Kirby\Cms\App;
 use Kirby\Toolkit\Date;
 use Zephir\Openinghours\Helpers\Daterange;
@@ -15,16 +15,14 @@ class Openinghours {
     protected array $openinghours = [];
 
     /**
-     * @var Openinghour[]
+     * @var SpecialOpeninghour[]
      */
     protected array $specialOpeninghours = [];
 
-    /**
-     * @param Openinghour[] $openinghours
-     */
     public function __construct()
     {
         $this->setOpeninghours(App::instance()->site()->openinghours()->toObject()->toArray());
+        $this->setSpecialOpeninghours(App::instance()->site()->specialOpeninghours()->toObject()->toArray());
     }
 
     public function setOpeninghours(array $openinghours)
@@ -51,6 +49,11 @@ class Openinghours {
                         new Date($openinghour['daterange']['start']),
                         new Date($openinghour['daterange']['end'])
                     );
+                }
+
+                // If the openinghour is not the default openinghour and the daterange is in the past, skip Item
+                if (!$openinghour['default'] && $daterange->getEndDate()->isBefore((new Date())->floor('day'))) {
+                    return false;
                 }
 
                 return new Openinghour(
@@ -82,10 +85,6 @@ class Openinghours {
         foreach ($activeIndexes as $index) {
             if ($index !== end($activeIndexes)) {
                 $openinghours[$index]->setIsActive(false);
-
-                if ($openinghours[$index]->isDefault()) {
-                    // $openinghours[$index]->setIsHidden(true);
-                }
             }
         }
 
@@ -101,6 +100,39 @@ class Openinghours {
         return $this;
     }
 
+    public function setSpecialOpeninghours(array $openinghours)
+    {
+        $openinghours = array_filter(
+            array_map(function($openinghour) {
+                $isClosed = $openinghour['closed'] === 'true' ?? false;
+
+                $date = new Date($openinghour['date']);
+
+                if ($date->isBefore((new Date())->floor('day'))) {
+                    return false;
+                }
+
+                return new SpecialOpeninghour(
+                    $openinghour['label'],
+                    $date,
+                    $isClosed ? [] : [
+                        $openinghour['timeblock1'],
+                        $openinghour['timeblock2']
+                    ],
+                    $isClosed
+                );
+            }, $openinghours),
+            fn($item) => $item !== false
+        );
+
+        // Sort by date
+        usort($openinghours, function($a, $b) {
+            return $a->getDate() <=> $b->getDate();
+        });
+
+        $this->specialOpeninghours = $openinghours;
+    }
+
     /**
      * @return Openinghour
      */
@@ -110,11 +142,24 @@ class Openinghours {
     }
 
     /**
-     * @return Weekday|false
+     * @return SpecialOpeninghour
+     */
+    public function getActiveSpecialOpeninghour()
+    {
+        return $this->specialOpeninghours[array_search(true, array_map(fn($oh) => $oh->isActive(), $this->specialOpeninghours))];
+    }
+
+    /**
+     * @return Weekday|SpecialOpeninghour|false
      */
     public function getToday()
     {
         $openinghour = $this->getActiveOpeninghour();
+        $specialOpeninghour = $this->getActiveSpecialOpeninghour();
+
+        if ($specialOpeninghour) {
+            return $specialOpeninghour;
+        }
 
         if (!$openinghour) {
             return false;
@@ -129,6 +174,14 @@ class Openinghours {
     public function getOpeninghours(): array
     {
         return $this->openinghours;
+    }
+
+    /**
+     * @return SpecialOpeninghour[]
+     */
+    public function getSpecialOpeninghours(): array
+    {
+        return $this->specialOpeninghours;
     }
 
 }

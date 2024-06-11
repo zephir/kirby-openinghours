@@ -134,18 +134,26 @@ class Openinghours {
     }
 
     /**
-     * @return Openinghour
+     * @return Openinghour|null
      */
     public function getActiveOpeninghour()
     {
+        if (empty($this->openinghours)) {
+            return null;
+        }
+
         return $this->openinghours[array_search(true, array_map(fn($oh) => $oh->isActive(), $this->openinghours))];
     }
 
     /**
-     * @return SpecialOpeninghour
+     * @return SpecialOpeninghour|null
      */
     public function getActiveSpecialOpeninghour()
     {
+        if (empty($this->specialOpeninghours)) {
+            return null;
+        }
+
         return $this->specialOpeninghours[array_search(true, array_map(fn($oh) => $oh->isActive(), $this->specialOpeninghours))];
     }
 

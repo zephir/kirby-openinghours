@@ -2,7 +2,6 @@
 
 namespace Zephir\Openinghours\Models;
 
-use DateInterval;
 use Kirby\Cms\App;
 use Kirby\Toolkit\Date;
 use Zephir\Openinghours\Helpers\Daterange;
@@ -67,7 +66,7 @@ class Openinghours {
         );
 
         // Map the $openinghours array
-        // an change isActive to true if:
+        // and change isActive to true if:
         // - the openinghour is the default openinghour
         // - the openinghour is not the default openinghour, but the current date is within the daterange
         $openinghours = array_map(function($openinghour) {
@@ -81,6 +80,17 @@ class Openinghours {
         // Identify all active indexes
         $activeIndexes = array_keys(array_filter($openinghours, fn($hour) => $hour->isActive()));
 
+        // If there are multiple active indexes, remove the active one if it is isDefault
+        if (count($activeIndexes) > 1) {
+            foreach ($activeIndexes as $index) {
+                if ($openinghours[$index]->isDefault()) {
+                    $openinghours[$index]->setIsActive(false);
+                    // Remove the index from the activeIndexes array
+                    unset($activeIndexes[$index]);
+                }
+            }
+        }
+
         // Ensure only the last active entry remains active if there are multiple
         foreach ($activeIndexes as $index) {
             if ($index !== end($activeIndexes)) {
@@ -88,11 +98,23 @@ class Openinghours {
             }
         }
 
-        // Sort the opening hours by isActive, default, and daterange
+        // Sort the opening hours by isDefault, isActive, and daterange
         usort($openinghours, function($a, $b) {
-            return ($b->isActive() ?? false) <=> ($a->isActive() ?? false)
-                ?: ($b->isDefault() ?? false) <=> ($a->isDefault() ?? false)
-                ?: ($a->getDateRange()->getStartDate() ?? null) <=> ($a->getDateRange()->getStartDate() ?? null);
+            // Check if either $a or $b is the default
+            if ($a->isDefault() && !$b->isDefault()) {
+                return -1; // $a should come first
+            } elseif (!$a->isDefault() && $b->isDefault()) {
+                return 1; // $b should come first
+            }
+
+            // If both are default or neither, fall back to isActive
+            $isActiveComparison = ($b->isActive() ?? false) <=> ($a->isActive() ?? false);
+            if ($isActiveComparison !== 0) {
+                return $isActiveComparison;
+            }
+
+            // If both are equal in isActive, fall back to date range
+            return ($a->getDateRange()->getStartDate() ?? null) <=> ($b->getDateRange()->getStartDate() ?? null);
         });
 
         $this->openinghours = $openinghours;

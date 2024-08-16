@@ -60,7 +60,7 @@ class SpecialOpeninghour
             return $timeblock->getFormatted();
         }, $this->timeblocks);
 
-        return 'von ' . implode(' und ', $timeblocks) . ' Uhr';
+        return 'von ' . implode(' & ', $timeblocks) . ' Uhr';
     }
 
     /**

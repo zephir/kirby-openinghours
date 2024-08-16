@@ -1,9 +1,5 @@
 <?php
 
-use Kirby\Toolkit\Date;
-use Kirby\Toolkit\Str;
-use Zephir\Openinghours\Helpers\Openinghours;
-use Zephir\Openinghours\Helpers\Formatting;
 use Zephir\Openinghours\Models\Openinghours as OpeninghoursModel;
 
 $o = new OpeninghoursModel();
@@ -13,15 +9,11 @@ $o = new OpeninghoursModel();
 <?php foreach ($o->getOpeninghours() as $openinghour): ?>
     <?php if ($openinghour->isHidden()) continue; ?>
 
-    <h3>
-        <?php if ($openinghour->isDefault() && $openinghour->isActive()): ?>
-            Aktuell
-        <?php elseif ($openinghour->isDefault()): ?>
-            Normale Öffnungszeiten
-        <?php else: ?>
-            <?= $openinghour->getLabel() ? $openinghour->getLabel() : '' ?>
-        <?php endif; ?>
-    </h3>
+    <?php if (!$openinghour->isDefault()): ?>
+        <h3 style="margin-top: 2.5em">
+                <?= $openinghour->getLabel() ? $openinghour->getLabel() : '' ?>
+        </h3>
+    <?php endif; ?>
 
     <?php if (!$openinghour->isDefault()): ?>
         <?php

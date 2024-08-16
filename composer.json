@@ -3,7 +3,7 @@
     "description": "Openinghours plugin to manage and display opening hours.",
     "license": "MIT",
     "type": "kirby-plugin",
-    "version": "0.0.12",
+    "version": "0.0.13",
     "authors": [
         {
             "name": "Marc Stampfli",

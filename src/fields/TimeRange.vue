@@ -68,8 +68,8 @@ const validateRange = ({ start, end }, changedValue) => {
     const startTimes = start.split(':')
     const endTimes = end.split(':')
 
-    let startDate = dayjs('01.01.2000')
-    let endDate = dayjs('01.01.2000')
+    let startDate = dayjs('01/01/2000')
+    let endDate = dayjs('01/01/2000')
 
     startDate = startDate.hour(startTimes[0])
     startDate = startDate.minute(startTimes[1])
